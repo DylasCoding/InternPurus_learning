@@ -167,36 +167,24 @@ function render(image) {
     gl.uniform2f(textureSizeUniformLocation, image.width, image.height);
 
     for (var i = 0; i < effectsToApply.length; ++i) {
-        gl.uniform1f(flipYLocation, 1.0); //đang trong xử lý không flip
-
+        gl.uniform1f(flipYLocation, 1.0);
         // Xoay vòng bộ đệm 0 và 1
         setFramebuffer(framebuffers[i % 2], image.width, image.height);
-
-        // Vẽ hiệu ứng hiện tại
         drawWithKernel(effectsToApply[i]);
-
-        // vẽ xong -> gán texture kết quả vàp
         gl.bindTexture(gl.TEXTURE_2D, textures[i % 2]);
     }
 
-    // --- BƯỚC CUỐI CÙNG: XUẤT RA CANVAS (MÀN HÌNH CHÍNH) ---
-    // Cập nhật lại kích thước Canvas thực tế hiển thị
     var displayWidth  = gl.canvas.clientWidth;
     var displayHeight = gl.canvas.clientHeight;
-    if (gl.canvas.width !== displayWidth || gl.canvas.height !== displayHeight) {
-        gl.canvas.width  = displayWidth;
-        gl.canvas.height = displayHeight;
-    }
+    if (gl.canvas.width !== displayWidth || gl.canvas.height !== displayHeight) {gl.canvas.width  = displayWidth; gl.canvas.height = displayHeight;}
 
     gl.uniform1f(flipYLocation, -1.0);
 
-    // Bind Framebuffer về null báo hiệu vẽ thẳng lên Canvas màn hình
+    // Bind Framebuffer về null
     setFramebuffer(null, gl.canvas.width, gl.canvas.height);
 
-    // Xóa bộ đệm Canvas cũ trước khi vẽ đè
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    // Áp dụng bộ lọc "normal" để kết xuất dữ liệu
     drawWithKernel("normal");
 }

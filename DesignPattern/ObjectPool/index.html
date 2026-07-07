@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Pool Pattern</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+        canvas {
+            border: 2px solid #555;
+            background-color: #111;
+            cursor: pointer;
+        }
+        #stats {
+            margin-top: 15px;
+            font-size: 16px;
+            line-height: 1.5;
+            background: #333;
+            padding: 10px 20px;
+            border-radius: 5px;
+            min-width: 300px;
+        }
+        span {
+            font-weight: bold;
+            color: #4caf50;
+        }
+        h2 { margin: 5px 0; color: #ffeb3b; }
+    </style>
+</head>
+<body>
+
+<h1>Object Pool Pattern Demo</h1>
+
+<canvas id="gameCanvas" width="800" height="400"></canvas>
+
+<div id="stats">
+    <div>Current mode: <span id="currentMode" style="color: #ff5722;"></span></div>
+    <div>Bullets Active: <span id="activeCount">0</span></div>
+    <div>Bullets pool : <span id="pooledCount">0</span></div>
+    <div>Objects Created: <span id="totalCreated">0</span></div>
+</div>
+
+<script src="game_object.js"></script>
+<script src="object_pool.js"></script>
+<script src="bullet.js"></script>
+
+<script src="main-pool.js"></script>
+<!--<script src="main-normal.js"></script>-->
+
+
+</body>
+</html>

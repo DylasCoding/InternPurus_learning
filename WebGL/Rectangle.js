@@ -68,16 +68,13 @@ gl.clear(gl.COLOR_BUFFER_BIT);
 
 gl.useProgram(program);
 
-// Truyền độ phân giải cho trục X và Y
 gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
 
 gl.enableVertexAttribArray(positionAttributeLocation);
 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
-// Vẽ 50 hình chữ nhật ngẫu nhiên
 for (var ii = 0; ii < 50; ++ii) {
-    // Ghi đè tọa độ ngẫu nhiên mới vào positionBuffer
     setRectangle(gl, randomInt(400), randomInt(400), randomInt(300), randomInt(300));
 
     // Thay đổi màu sắc

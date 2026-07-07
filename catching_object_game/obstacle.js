@@ -1,7 +1,7 @@
 const OBSTACLE_COLOR = "#fb7185";
 const OBSTACLE_DARK_COLOR = "#be123c";
 
-class Obstacle extends GameObject {
+class Obstacle extends Game_object {
     constructor(context, x, y, width, height, speed) {
         super(context, x, y, width, height, 0, speed);
     }

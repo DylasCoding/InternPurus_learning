@@ -1,7 +1,7 @@
 const FALLING_OBJECT_COLOR = "#facc15";
 const FALLING_OBJECT_DARK_COLOR = "#ca8a04";
 
-class FallingObject extends GameObject {
+class FallingObject extends Game_object {
     constructor(context, x, y, size, speed) {
         super(context, x, y, size, size, 0, speed);
         this.caught = false;

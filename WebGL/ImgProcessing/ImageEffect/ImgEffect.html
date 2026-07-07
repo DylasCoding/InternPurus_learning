@@ -26,7 +26,6 @@
         vec2 zeroToTwo = zeroToOne * 2.0;
         vec2 clipSpace = zeroToTwo - 1.0;
 
-        // Áp dụng u_flipY để kiểm soát hướng hiển thị
         gl_Position = vec4(clipSpace * vec2(1, u_flipY), 0, 1);
 
         v_texCoord = a_texCoord;
@@ -38,15 +37,14 @@
 
     uniform sampler2D u_image;
     uniform vec2 u_textureSize;
-    uniform float u_kernel[9];      // Mảng chứa 9 phần tử của kernel
-    uniform float u_kernelWeight;   // Trọng số chia của ma trận
+    uniform float u_kernel[9];
+    uniform float u_kernelWeight;
 
     varying vec2 v_texCoord;
 
     void main() {
         vec2 onePixel = vec2(1.0, 1.0) / u_textureSize;
 
-        // Tính chập tích lũy từ 9 pixel xung quanh
         vec4 colorSum =
         texture2D(u_image, v_texCoord + onePixel * vec2(-1, -1)) * u_kernel[0] +
         texture2D(u_image, v_texCoord + onePixel * vec2( 0, -1)) * u_kernel[1] +
@@ -58,7 +56,6 @@
         texture2D(u_image, v_texCoord + onePixel * vec2( 0,  1)) * u_kernel[7] +
         texture2D(u_image, v_texCoord + onePixel * vec2( 1,  1)) * u_kernel[8] ;
 
-        // Chia cho tổng trọng số, giữ nguyên alpha là 1.0
         gl_FragColor = vec4((colorSum / u_kernelWeight).rgb, 1.0);
     }
 </script>

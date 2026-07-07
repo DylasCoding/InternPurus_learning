@@ -1,6 +1,6 @@
 var canvas = document.querySelector("#c");
 var gl = canvas.getContext("webgl");
-if (!gl) { console.error("WebGL not supported"); }
+if (!gl) { console.error("WebGL không hỗ trợ!"); }
 
 function createShader(gl, type, source) {
     var shader = gl.createShader(type);
@@ -33,7 +33,7 @@ function setRectangle(gl, x, y, width, height) {
         x1, y2,
         x2, y1,
         x2, y2,
-    ]), gl.STATIC_DRAW);
+    ]), gl.DYNAMIC_DRAW);
 }
 
 var vertexShaderSource = document.querySelector("#vertex-shader-2d").text;
@@ -44,68 +44,78 @@ var program = createProgram(gl, vertexShader, fragmentShader);
 
 var positionAttributeLocation = gl.getAttribLocation(program, "a_position");
 var texCoordAttributeLocation = gl.getAttribLocation(program, "a_texCoord");
-
 var resolutionUniformLocation = gl.getUniformLocation(program, "u_resolution");
-var textureSizeUniformLocation = gl.getUniformLocation(program, "u_textureSize");
 
-var image = new Image();
-image.src = "./img.png";
-image.onload = function() {
-    render(image);
+var positionBuffer = gl.createBuffer();
+var texcoordBuffer = gl.createBuffer();
+
+gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+    0.0,  0.0,
+    1.0,  0.0,
+    0.0,  1.0,
+    0.0,  1.0,
+    1.0,  0.0,
+    1.0,  1.0,
+]), gl.STATIC_DRAW);
+
+var circle = {
+    x: window.innerWidth / 2,
+    y: 100,
+    radius: 40,
+    vy: 0,
+    gravity: 0.6,
+    bounce: 0.75
+};
+
+function main() {
+    updatePhysics();
+    render();
+    requestAnimationFrame(main);
 }
 
-function render(image) {
+function updatePhysics() {
+    circle.vy += circle.gravity;
+    circle.y += circle.vy;
 
-    var displayWidth  = gl.canvas.clientWidth;
-    var displayHeight = gl.canvas.clientHeight;
-    if (gl.canvas.width !== displayWidth || gl.canvas.height !== displayHeight) {
-        gl.canvas.width  = displayWidth;
-        gl.canvas.height = displayHeight;
+    var ground = canvas.height;
+    if (circle.y + circle.radius > ground) {
+
+        circle.y = ground - circle.radius;
+
+        circle.vy = -circle.vy * circle.bounce;
+
+        if (Math.abs(circle.vy) < 1.5) {
+            circle.vy = 0;
+        }
     }
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+}
+
+function render() {
+    if (canvas.width !== window.innerWidth || canvas.height !== window.innerHeight) {
+        canvas.width  = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    gl.viewport(0, 0, canvas.width, canvas.height);
 
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     gl.useProgram(program);
 
-    gl.uniform2f(resolutionUniformLocation, gl.canvas.width, gl.canvas.height);
-    gl.uniform2f(textureSizeUniformLocation, image.width, image.height);
+    gl.uniform2f(resolutionUniformLocation, canvas.width, canvas.height);
 
-    // buffer 1:
-    var positionBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-
-    setRectangle(gl, 0, 0, image.width, image.height);
-
+    setRectangle(gl, circle.x - circle.radius, circle.y - circle.radius, circle.radius * 2, circle.radius * 2);
     gl.enableVertexAttribArray(positionAttributeLocation);
     gl.vertexAttribPointer(positionAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
-    // buffer 2:
-    var texcoordBuffer = gl.createBuffer();
+    // Bind tọa độ Texture Coordinate hỗ trợ cắt hình tròn
     gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
-        0.0,  0.0,
-        1.0,  0.0,
-        0.0,  1.0,
-        0.0,  1.0,
-        1.0,  0.0,
-        1.0,  1.0,
-    ]), gl.STATIC_DRAW);
-
     gl.enableVertexAttribArray(texCoordAttributeLocation);
     gl.vertexAttribPointer(texCoordAttributeLocation, 2, gl.FLOAT, false, 0, 0);
 
-    var texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-
     gl.drawArrays(gl.TRIANGLES, 0, 6);
 }
+
+main();
